@@ -1,6 +1,6 @@
 # Guia de Econometria e Séries Temporais
 
-      [English version / Versão em inglês](README.en.md)
+ [English version / Versão em inglês](README.en.md)
 
 Material de estudo em português com explicações originais, experimentos numéricos
 conferidos e exercícios resolvidos. Cobre: esperança condicional, assintótica, MQO,
