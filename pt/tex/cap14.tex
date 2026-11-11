@@ -1,0 +1,45 @@
+\chapter{Cola de armadilhas e convenções}
+\label{cap:cola}
+
+Esta lista reúne os pontos em que livros, softwares e intuições costumam divergir. Cada item aparece no capítulo indicado.
+
+\begin{center}
+\small
+\begin{longtable}{p{0.5cm}p{6.6cm}p{6.5cm}}
+\toprule
+\textbf{\#} & \textbf{Armadilha} & \textbf{Conduta correta} \\
+\midrule
+\endhead
+1 & Tomar $\E(u\mid x)=0$ como necessário para consistência do MQO (cap.~\ref{cap:mqo}) & Basta $\E(x'u)=0$. A hipótese condicional é necessária para a interpretação como esperança condicional e para resultados de amostra finita. \\
+2 & Corrigir heterocedasticidade só depois de ``testar'' (cap.~\ref{cap:mqo}) & Reporte erros robustos diretamente: valem nos dois casos. \\
+3 & Esquecer que erro robusto a heterocedasticidade não corrige autocorrelação (cap.~\ref{cap:mqo}, \ref{cap:painel}) & HAC em séries, erros agrupados em painéis. \\
+4 & Interpretar viés de variável omitida sem checar os dois sinais (cap.~\ref{cap:omit}) & O viés é $\beta_2\delta_1$. O sinal é o produto dos dois. \\
+5 & Esperar que erro de medida sempre atenue (cap.~\ref{cap:omit}) & Só vale para erro clássico num regressor. Com vários regressores ou erro não clássico, o efeito é incerto. \\
+6 & Rodar o 2º estágio de VI à mão (cap.~\ref{cap:vi}) & Use um comando de MQ2E, que corrige os erros-padrão. \\
+7 & Confiar na regra ``F $>10$'' como garantia (cap.~\ref{cap:vi}) & É um mínimo. Reporte também intervalos robustos a instrumentos fracos. \\
+8 & Usar Hausman clássico com erros robustos (cap.~\ref{cap:painel}) & Use a versão de Mundlak com erros agrupados. \\
+9 & Esquecer que efeitos fixos exigem exogeneidade estrita (cap.~\ref{cap:painel}) & Com defasagem da dependente ou \emph{feedback}, use painel dinâmico (GMM). \\
+10 & Copiar fórmula de MA de um livro e coeficiente de um software sem checar o sinal (cap.~\ref{cap:est}) & Cryer--Chan e Mills: $\varepsilon_t-\theta\varepsilon_{t-1}$. Hamilton, R, \texttt{statsmodels}: $\varepsilon_t+\theta\varepsilon_{t-1}$. \\
+11 & Usar bandas $\pm1{,}96/\sqrt n$ como veredito (cap.~\ref{cap:est}) & Valem sob ruído branco. Para outras séries, as bandas são mais largas. \\
+12 & Ljung--Box com $m$ graus de liberdade em resíduos de ARMA (cap.~\ref{cap:arma}) & Use $m-p-q$. \\
+13 & Comparar a estatística ADF com $-1{,}96$ (cap.~\ref{cap:ur}) & Use valores críticos de Dickey--Fuller (cerca de $-2{,}86$ a 5\% com constante). \\
+14 & Regredir séries integradas em nível (cap.~\ref{cap:ur}) & Teste cointegração. Se não houver, diferencie. \\
+15 & Supor que o intervalo de previsão tem cobertura exata (cap.~\ref{cap:prev}) & Ele ignora incerteza dos parâmetros e do modelo. Avalie a cobertura fora da amostra. \\
+16 & Ler Granger como causalidade (cap.~\ref{cap:var}) & É precedência preditiva. \\
+17 & Ignorar a ordem de Cholesky nas respostas a impulso (cap.~\ref{cap:var}) & A ordem é uma hipótese de identificação e muda os resultados. \\
+18 & Interpretar $\omega$, $\alpha$, $\beta$ isoladamente em GARCH persistente (cap.~\ref{cap:garch}) & Olhe a persistência $\alpha+\beta$ e a variância incondicional. \\
+19 & Validação cruzada aleatória em séries (cap.~\ref{cap:ml}) & Validação temporal, com origem móvel. \\
+20 & Esperar que árvores extrapolem tendência (cap.~\ref{cap:ml}) & Remova a tendência ou use modelo híbrido. \\
+\bottomrule
+\end{longtable}
+\end{center}
+
+\section*{Roteiro de estudo sugerido}
+\begin{enumerate}[leftmargin=1.6em]
+\item Capítulos~\ref{cap:ec} a~\ref{cap:mqo}: faça todos os exercícios, à mão.
+\item Capítulos~\ref{cap:omit} e~\ref{cap:vi}: replique as simulações em Python ou R, mudando os parâmetros, até prever o resultado antes de rodar.
+\item Capítulo~\ref{cap:painel}: monte um painel simulado com $c_i$ correlacionado e descorrelacionado e compare os estimadores.
+\item Capítulos~\ref{cap:est} a~\ref{cap:prev}: ajuste ARIMA a uma série real, faça o diagnóstico e a avaliação com origem móvel.
+\item Capítulos~\ref{cap:ur} a~\ref{cap:garch}: teste raiz unitária e cointegração em pares de séries de preços; estime um GARCH em retornos diários.
+\item Capítulo~\ref{cap:ml}: reproduza o vazamento da validação cruzada e depois resolva com validação temporal.
+\end{enumerate}

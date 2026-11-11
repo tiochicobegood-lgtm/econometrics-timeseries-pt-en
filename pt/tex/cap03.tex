@@ -1,0 +1,50 @@
+\chapter{MQO: o que estima, quando funciona e como calcular os erros-padrão}
+\label{cap:mqo}
+
+\section{O modelo e as hipóteses mínimas}
+Considere $y=x\beta+u$, em que $x=(1,x_1,\dots,x_k)$ é um vetor linha. O estimador de mínimos quadrados ordinários é $\hat\beta=(X'X)^{-1}X'y$.
+
+As quatro hipóteses para consistência e normalidade assintótica, na versão de amostra aleatória:
+\begin{enumerate}[leftmargin=1.6em]
+\item $y=x\beta+u$ (o modelo é linear nos parâmetros);
+\item os dados são uma amostra aleatória (observações independentes e identicamente distribuídas);
+\item $\E(x'u)=0$ (os regressores não são correlacionados com o erro);
+\item $\E(x'x)$ tem posto cheio (sem colinearidade perfeita).
+\end{enumerate}
+
+\begin{atencao}[{Armadilha: a hipótese condicional é mais forte do que o necessário}]
+Muitos textos clássicos exigem $\E(u\mid x)=0$ ou tratam $x$ como fixo. Para \emph{consistência}, basta $\E(x'u)=0$, que é a hipótese de que a projeção linear está correta. $\E(u\mid x)=0$ só é necessária se você quer interpretar $x\beta$ como a esperança condicional, ou se quer propriedades de amostra finita (não viés exato). Wooldridge insiste nessa distinção e ela vale a pena guardar.
+\end{atencao}
+
+\section{Consistência em duas linhas}
+\[
+\hat\beta=\beta+\Big(\tfrac1n\textstyle\sum x_i'x_i\Big)^{-1}\Big(\tfrac1n\sum x_i'u_i\Big)\;\to_p\;\beta+\big[\E(x'x)\big]^{-1}\E(x'u)=\beta.
+\]
+O segundo fator tende a zero pela LGN \emph{se} $\E(x'u)=0$. Todo o resto do curso (variáveis omitidas, erro de medida, VI) é uma história sobre o que acontece quando essa condição falha.
+
+\section{Erros-padrão: usual versus robusto}
+\begin{itemize}[leftmargin=1.4em]
+\item \textbf{Usual} (homocedástico): $\widehat{\Var}(\hat\beta)=\hat\sigma^2(X'X)^{-1}$. Vale se $\Var(u\mid x)$ é constante.
+\item \textbf{Robusto a heterocedasticidade} (White/Eicker--Huber): $\widehat{\Var}(\hat\beta)=(X'X)^{-1}\Big(\sum\hat u_i^2x_i'x_i\Big)(X'X)^{-1}$. Vale mesmo quando a variância do erro depende de $x$.
+\end{itemize}
+
+\begin{simulacao}[{Conferido por simulação: erro-padrão usual subestima}]
+$n=5000$, $y=1+2x+|x|\,\varepsilon$, com $\varepsilon\sim N(0,1)$ (variância do erro cresce com $|x|$). O coeficiente de $x$ é estimado sem viés, mas o erro-padrão usual é $0{,}0143$ e o robusto é $0{,}0248$. O usual é cerca de 42\% menor, e produziria testes t inflados e intervalos curtos demais.
+\end{simulacao}
+
+\begin{intuicao}[{Por que Gauss--Markov importa menos do que parece}]
+O teorema de Gauss--Markov diz que o MQO é o melhor estimador linear não viesado \emph{se} há homocedasticidade. Com heterocedasticidade ele continua consistente, apenas deixa de ser o mais eficiente, e o erro-padrão usual deixa de ser válido. Por isso, na prática, o hábito moderno é: estimar por MQO e reportar erros robustos.
+\end{intuicao}
+
+\begin{atencao}[{Armadilhas frequentes}]
+\begin{itemize}[leftmargin=1.2em]
+\item \textbf{R² alto não valida causalidade.} Ele mede ajuste, não identificação.
+\item \textbf{Teste de heterocedasticidade antes de escolher o erro-padrão} é desnecessário: o robusto é válido nos dois casos.
+\item \textbf{Séries temporais ou painéis}: o erro-padrão robusto a heterocedasticidade \emph{não} corrige correlação serial. Use erros robustos a autocorrelação (HAC) ou agrupados (cluster).
+\end{itemize}
+\end{atencao}
+
+\begin{exercicio}
+Um modelo $y=\beta_0+\beta_1 x+u$ foi estimado com $n=100$, $\hat\beta_1=0{,}8$ e erro-padrão robusto $0{,}3$. Teste $H_0:\beta_1=0$ a 5\%.
+\end{exercicio}
+\sol{$t=0{,}8/0{,}3\approx2{,}67>1{,}96$. Rejeita-se $H_0$ a 5\%. Intervalo de 95\%: $0{,}8\pm1{,}96\times0{,}3=[0{,}21;\,1{,}39]$.}

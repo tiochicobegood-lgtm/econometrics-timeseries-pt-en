@@ -1,0 +1,45 @@
+\chapter{ARMA, ARIMA e a metodologia Box--Jenkins}
+\label{cap:arma}
+
+\section{O modelo ARMA e o operador de defasagem}
+Com $B y_t=y_{t-1}$, um ARMA($p,q$) escreve-se
+\[
+\phi(B)\,y_t=\theta(B)\,\varepsilon_t,\qquad \phi(B)=1-\phi_1B-\dots-\phi_pB^p,\quad \theta(B)=1+\theta_1B+\dots+\theta_qB^q.
+\]
+Duas exigências técnicas: \textbf{estacionariedade} (raízes de $\phi(B)$ fora do círculo unitário) e \textbf{invertibilidade} (raízes de $\theta(B)$ fora do círculo unitário). Esta última garante que o choque $\varepsilon_t$ pode ser recuperado dos dados passados e que o modelo é identificado (vimos que $\theta$ e $1/\theta$ dão a mesma FAC).
+
+\section{ARIMA: o que a letra ``I'' faz}
+Se a série tem raiz unitária (passeio aleatório, tendência estocástica), diferencie: $\Delta y_t=y_t-y_{t-1}$. Um ARIMA($p,d,q$) é um ARMA($p,q$) aplicado à série diferenciada $d$ vezes. Quase nunca é necessário $d>2$.
+
+\begin{atencao}[{Superdiferenciação}]
+Diferenciar uma série que já é estacionária cria uma raiz unitária no componente MA (o MA fica não invertível). Sintomas: FAC amostral com $\rho_1$ próximo de $-0{,}5$ e variância maior depois de diferenciar. Diferencie apenas o necessário.
+\end{atencao}
+
+\section{O ciclo Box--Jenkins em quatro passos}
+\begin{enumerate}[leftmargin=1.6em]
+\item \textbf{Especificação}: olhe o gráfico da série, decida a transformação (log para variância crescente) e o grau de diferenciação (teste de raiz unitária, capítulo~\ref{cap:ur}). Use FAC e FACP para sugerir candidatos e critérios de informação (AIC, BIC) para compará-los.
+\item \textbf{Estimação}: máxima verossimilhança ou mínimos quadrados condicionais.
+\item \textbf{Diagnóstico}: os resíduos devem se parecer com ruído branco. Examine a FAC dos resíduos e faça o teste de Ljung--Box.
+\item \textbf{Previsão}: apenas com o modelo validado (capítulo~\ref{cap:prev}).
+\end{enumerate}
+
+\begin{atencao}[{Armadilha: graus de liberdade do Ljung--Box}]
+A estatística $Q=n(n+2)\sum_{k=1}^m\hat\rho_k^2/(n-k)$ é comparada com uma qui-quadrado com $m-p-q$ graus de liberdade, \textbf{não} com $m$, quando se testa resíduos de um ARMA($p,q$) estimado. Usar $m$ torna o teste conservador. Muitos softwares permitem informar $p+q$ para ajustar. Verifique.
+\end{atencao}
+
+\begin{intuicao}[{AIC versus BIC}]
+Ambos penalizam a complexidade: $\text{AIC}=-2\ln L+2k$ e $\text{BIC}=-2\ln L+k\ln n$. O BIC pune mais e tende a escolher modelos menores e consistentes (encontra o modelo verdadeiro quando ele está entre os candidatos). O AIC tende a favorecer qualidade de previsão. Em caso de divergência, vale olhar os dois e preferir parcimônia.
+\end{intuicao}
+
+\section{Sazonalidade}
+Para dados com ciclo de período $s$ (12 em dados mensais), usa-se o ARIMA sazonal $(p,d,q)(P,D,Q)_s$: acrescenta-se diferenciação sazonal $(1-B^s)$ e termos AR e MA nas defasagens $s,2s,\dots$ O exemplo clássico é o ``modelo de linhas aéreas'', um ARIMA$(0,1,1)(0,1,1)_{12}$ aplicado ao logaritmo da série. Sazonalidade também pode ser tratada com variáveis indicadoras ou com suavização exponencial (Holt--Winters).
+
+\begin{exercicio}
+O modelo $y_t=0{,}5y_{t-1}+\varepsilon_t+0{,}4\varepsilon_{t-1}$ é estacionário e invertível?
+\end{exercicio}
+\sol{Parte AR: $\phi(B)=1-0{,}5B$, raiz $B=2$, fora do círculo unitário: estacionário. Parte MA: $\theta(B)=1+0{,}4B$, raiz $B=-2{,}5$, fora do círculo: invertível.}
+
+\begin{exercicio}
+Uma série tem FAC amostral que decai muito lentamente (0,95; 0,93; 0,91, \dots). O que isso sugere e qual é o próximo passo?
+\end{exercicio}
+\sol{Autocorrelações muito persistentes são típicas de raiz unitária ou tendência. O próximo passo é aplicar um teste de raiz unitária (ADF, KPSS) e, se confirmada, diferenciar a série antes de identificar o ARMA.}

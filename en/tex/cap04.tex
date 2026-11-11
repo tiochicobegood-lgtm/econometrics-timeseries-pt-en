@@ -1,0 +1,49 @@
+\chapter{Omitted variables and measurement error}
+\label{cap:omit}
+
+\section{Omitted variable}
+Suppose the true model is $y=\beta_0+\beta_1x+\beta_2z+u$, but you do not observe $z$ and regress $y$ on $x$. Let $\delta_1$ be the slope of the regression of $z$ on $x$. Then
+\[
+\plim\hat\beta_1^{\text{short}}=\beta_1+\beta_2\,\delta_1,\qquad \delta_1=\frac{\Cov(x,z)}{\Var(x)}.
+\]
+The bias is the product of two factors: the effect of $z$ on $y$ ($\beta_2$) and the association between $z$ and $x$ ($\delta_1$). If either is zero, there is no bias.
+
+\begin{simulacao}[Checked by simulation]
+$x=0.6z+\epsilon$, with $z,\epsilon\sim N(0,1)$ independent, and $y=1+2x+1.5z+u$. Theory: $\delta_1=0.6/1.36=0.441$, so $\plim\hat\beta_1^{\text{short}}=2+1.5\times0.441=2.662$. With 2 million observations, the short regression gives $2.662$. Including $z$, the coefficient returns to $2.01$ (at $n=5000$).
+\end{simulacao}
+
+\begin{intuicao}
+Without $z$ in the equation, $x$ ``hitches a ride'' on the effect of $z$ on $y$ because the two move together. The stronger the ride, the larger the bias. The sign of the bias is the sign of $\beta_2\delta_1$: if both are positive, OLS overstates.
+\end{intuicao}
+
+\section{Proxy variable}
+If $z$ is not observed but you have a proxy $w$ (for example, a test score for ability), including $w$ can reduce or eliminate the bias. It works if (i) $w$ is \emph{redundant} in the equation for $y$ when $z$ is present and (ii) $z$ is, conditionally, linearly related to $w$ without depending on $x$. If (ii) fails, the proxy can even make things worse, since an imperfect control leaves residual bias.
+
+\section{Classical measurement error}
+There are two cases with very different consequences.
+\begin{itemize}[leftmargin=1.4em]
+\item \textbf{Error in the dependent variable}, $y=y^*+e$ with $e$ uncorrelated with $x$: OLS remains consistent and only loses precision.
+\item \textbf{Error in an explanatory variable}, $x=x^*+v$ with $v$ independent of $x^*$ and of $u$: OLS is \emph{attenuated} toward zero:
+\[
+\plim\hat\beta_1=\beta_1\cdot\frac{\sigma^2_{x^*}}{\sigma^2_{x^*}+\sigma^2_v}.
+\]
+The factor in parentheses is the ``reliability ratio'', always between 0 and 1.
+\end{itemize}
+
+\begin{simulacao}[Checked by simulation]
+$x^*\sim N(0,1)$, $y=1+2x^*+u$, and $x=x^*+v$ with $v\sim N(0,1)$. The reliability ratio is $1/(1+1)=0.5$, so OLS should converge to $2\times0.5=1.0$. Result: $0.995$.
+\end{simulacao}
+
+\begin{atencao}
+Attenuation holds for the regressor with error. If there are \emph{other} regressors correlated with it, the bias can contaminate the remaining coefficients in directions that are not obvious. And if the measurement error is correlated with the true value (``nonclassical error''), not even the sign of the attenuation is guaranteed.
+\end{atencao}
+
+\begin{exercicio}
+In a model where $\beta_1=0.5$, $\beta_2=2$, $\Var(x)=4$ and $\Cov(x,z)=1$, what is the probability limit of OLS of $y$ on $x$ if $z$ is omitted?
+\end{exercicio}
+\sol{$\delta_1=1/4=0.25$. $\plim\hat\beta_1=0.5+2\times0.25=1.0$. OLS doubles the true effect.}
+
+\begin{exercicio}
+An economist measures income with error and obtains $\hat\beta=0.30$. She knows the reliability of the measure is $0.6$. What would a corrected estimate of the attenuation be?
+\end{exercicio}
+\sol{$\hat\beta/0.6=0.30/0.6=0.50$, assuming classical error and a single regressor. In practice, the reliability has to come from outside (repeated data, validation, or an instrument).}

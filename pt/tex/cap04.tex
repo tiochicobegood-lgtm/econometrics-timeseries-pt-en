@@ -1,0 +1,49 @@
+\chapter{Variáveis omitidas e erro de medida}
+\label{cap:omit}
+
+\section{Variável omitida}
+Suponha que o modelo verdadeiro seja $y=\beta_0+\beta_1x+\beta_2z+u$, mas você não observa $z$ e roda $y$ contra $x$. Seja $\delta_1$ a inclinação da regressão de $z$ sobre $x$. Então
+\[
+\plim\hat\beta_1^{\text{curto}}=\beta_1+\beta_2\,\delta_1,\qquad \delta_1=\frac{\Cov(x,z)}{\Var(x)}.
+\]
+O viés é o produto de dois fatores: o efeito de $z$ sobre $y$ ($\beta_2$) e a associação entre $z$ e $x$ ($\delta_1$). Se qualquer um dos dois for zero, não há viés.
+
+\begin{simulacao}[{Conferido por simulação}]
+$x=0{,}6z+\epsilon$, com $z,\epsilon\sim N(0,1)$ independentes, e $y=1+2x+1{,}5z+u$. Teoria: $\delta_1=0{,}6/1{,}36=0{,}441$, logo $\plim\hat\beta_1^{\text{curto}}=2+1{,}5\times0{,}441=2{,}662$. Com 2 milhões de observações, a regressão curta dá $2{,}662$. Incluindo $z$, o coeficiente volta para $2{,}01$ (em $n=5000$).
+\end{simulacao}
+
+\begin{intuicao}
+Sem $z$ na equação, $x$ ``pega carona'' no efeito de $z$ sobre $y$ porque os dois andam juntos. Quanto mais forte a carona, maior o viés. O sinal do viés é o sinal de $\beta_2\delta_1$: se os dois são positivos, o MQO superestima.
+\end{intuicao}
+
+\section{Variável proxy}
+Se $z$ não é observada, mas você tem uma proxy $w$ (por exemplo, nota de teste para habilidade), incluir $w$ pode reduzir ou eliminar o viés. Funciona se (i) $w$ é \emph{redundante} na equação de $y$ quando $z$ está presente e (ii) $z$ é, condicionalmente, linearmente relacionada a $w$ sem depender de $x$. Se (ii) falha, a proxy pode até piorar, pois um controle imperfeito deixa viés residual.
+
+\section{Erro de medida clássico}
+Há dois casos com consequências muito diferentes.
+\begin{itemize}[leftmargin=1.4em]
+\item \textbf{Erro na variável dependente}, $y=y^*+e$ com $e$ não correlacionado com $x$: o MQO continua consistente e só perde precisão.
+\item \textbf{Erro numa variável explicativa}, $x=x^*+v$ com $v$ independente de $x^*$ e de $u$: o MQO é \emph{atenuado} em direção a zero:
+\[
+\plim\hat\beta_1=\beta_1\cdot\frac{\sigma^2_{x^*}}{\sigma^2_{x^*}+\sigma^2_v}.
+\]
+O fator entre parênteses é a ``razão de confiabilidade'', sempre entre 0 e 1.
+\end{itemize}
+
+\begin{simulacao}[{Conferido por simulação}]
+$x^*\sim N(0,1)$, $y=1+2x^*+u$, e $x=x^*+v$ com $v\sim N(0,1)$. A razão de confiabilidade é $1/(1+1)=0{,}5$, logo o MQO deve convergir para $2\times0{,}5=1{,}0$. Resultado: $0{,}995$.
+\end{simulacao}
+
+\begin{atencao}
+A atenuação vale para o regressor com erro. Se há \emph{outros} regressores correlacionados com ele, o viés pode contaminar os demais coeficientes em direções que não são óbvias. E, se o erro de medida for correlacionado com o valor verdadeiro (``erro não clássico''), nem o sinal da atenuação é garantido.
+\end{atencao}
+
+\begin{exercicio}
+Num modelo em que $\beta_1=0{,}5$, $\beta_2=2$, $\Var(x)=4$ e $\Cov(x,z)=1$, qual é o limite em probabilidade do MQO de $y$ contra $x$ se $z$ for omitida?
+\end{exercicio}
+\sol{$\delta_1=1/4=0{,}25$. $\plim\hat\beta_1=0{,}5+2\times0{,}25=1{,}0$. O MQO dobra o efeito verdadeiro.}
+
+\begin{exercicio}
+Um economista mede renda com erro e obtém $\hat\beta=0{,}30$. Sabe que a confiabilidade da medida é $0{,}6$. Qual seria uma estimativa corrigida da atenuação?
+\end{exercicio}
+\sol{$\hat\beta/0{,}6=0{,}30/0{,}6=0{,}50$, supondo erro clássico e um único regressor. Na prática, a confiabilidade precisa vir de fora (dados repetidos, validação ou um instrumento).}

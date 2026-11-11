@@ -1,0 +1,50 @@
+\chapter{OLS: what it estimates, when it works and how to compute standard errors}
+\label{cap:mqo}
+
+\section{The model and the minimal assumptions}
+Consider $y=x\beta+u$, where $x=(1,x_1,\dots,x_k)$ is a row vector. The ordinary least squares estimator is $\hat\beta=(X'X)^{-1}X'y$.
+
+The four assumptions for consistency and asymptotic normality, in the random-sample version:
+\begin{enumerate}[leftmargin=1.6em]
+\item $y=x\beta+u$ (the model is linear in the parameters);
+\item the data are a random sample (independent and identically distributed observations);
+\item $\E(x'u)=0$ (the regressors are uncorrelated with the error);
+\item $\E(x'x)$ has full rank (no perfect collinearity).
+\end{enumerate}
+
+\begin{atencao}[Pitfall: the conditional assumption is stronger than necessary]
+Many classic texts require $\E(u\mid x)=0$ or treat $x$ as fixed. For \emph{consistency}, $\E(x'u)=0$ is enough, which is the assumption that the linear projection is correct. $\E(u\mid x)=0$ is only needed if you want to interpret $x\beta$ as the conditional expectation, or if you want finite-sample properties (exact unbiasedness). Wooldridge insists on this distinction and it is worth remembering.
+\end{atencao}
+
+\section{Consistency in two lines}
+\[
+\hat\beta=\beta+\Big(\tfrac1n\textstyle\sum x_i'x_i\Big)^{-1}\Big(\tfrac1n\sum x_i'u_i\Big)\;\to_p\;\beta+\big[\E(x'x)\big]^{-1}\E(x'u)=\beta.
+\]
+The second factor goes to zero by the LLN \emph{if} $\E(x'u)=0$. All the rest of the course (omitted variables, measurement error, IV) is a story about what happens when this condition fails.
+
+\section{Standard errors: usual versus robust}
+\begin{itemize}[leftmargin=1.4em]
+\item \textbf{Usual} (homoskedastic): $\widehat{\Var}(\hat\beta)=\hat\sigma^2(X'X)^{-1}$. Valid if $\Var(u\mid x)$ is constant.
+\item \textbf{Heteroskedasticity-robust} (White/Eicker--Huber): $\widehat{\Var}(\hat\beta)=(X'X)^{-1}\Big(\sum\hat u_i^2x_i'x_i\Big)(X'X)^{-1}$. Valid even when the error variance depends on $x$.
+\end{itemize}
+
+\begin{simulacao}[Checked by simulation: the usual standard error understates]
+$n=5000$, $y=1+2x+|x|\,\varepsilon$, with $\varepsilon\sim N(0,1)$ (the error variance grows with $|x|$). The coefficient of $x$ is estimated without bias, but the usual standard error is $0.0143$ and the robust one is $0.0248$. The usual one is about 42\% smaller, and would produce inflated t tests and intervals that are too narrow.
+\end{simulacao}
+
+\begin{intuicao}[Why Gauss--Markov matters less than it seems]
+The Gauss--Markov theorem says OLS is the best linear unbiased estimator \emph{if} there is homoskedasticity. With heteroskedasticity it remains consistent; it just stops being the most efficient, and the usual standard error stops being valid. So, in practice, the modern habit is: estimate by OLS and report robust errors.
+\end{intuicao}
+
+\begin{atencao}[Frequent pitfalls]
+\begin{itemize}[leftmargin=1.2em]
+\item \textbf{A high R² does not validate causality.} It measures fit, not identification.
+\item \textbf{Testing for heteroskedasticity before choosing the standard error} is unnecessary: the robust one is valid in both cases.
+\item \textbf{Time series or panels}: the heteroskedasticity-robust standard error does \emph{not} correct serial correlation. Use autocorrelation-robust (HAC) or clustered errors.
+\end{itemize}
+\end{atencao}
+
+\begin{exercicio}
+A model $y=\beta_0+\beta_1 x+u$ was estimated with $n=100$, $\hat\beta_1=0.8$ and robust standard error $0.3$. Test $H_0:\beta_1=0$ at 5\%.
+\end{exercicio}
+\sol{$t=0.8/0.3\approx2.67>1.96$. Reject $H_0$ at 5\%. 95\% interval: $0.8\pm1.96\times0.3=[0.21;\,1.39]$.}

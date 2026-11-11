@@ -1,0 +1,45 @@
+\chapter{ARMA, ARIMA and the Box--Jenkins methodology}
+\label{cap:arma}
+
+\section{The ARMA model and the lag operator}
+With $B y_t=y_{t-1}$, an ARMA($p,q$) is written
+\[
+\phi(B)\,y_t=\theta(B)\,\varepsilon_t,\qquad \phi(B)=1-\phi_1B-\dots-\phi_pB^p,\quad \theta(B)=1+\theta_1B+\dots+\theta_qB^q.
+\]
+Two technical requirements: \textbf{stationarity} (roots of $\phi(B)$ outside the unit circle) and \textbf{invertibility} (roots of $\theta(B)$ outside the unit circle). The latter ensures the shock $\varepsilon_t$ can be recovered from past data and that the model is identified (we saw that $\theta$ and $1/\theta$ give the same ACF).
+
+\section{ARIMA: what the letter ``I'' does}
+If the series has a unit root (random walk, stochastic trend), difference it: $\Delta y_t=y_t-y_{t-1}$. An ARIMA($p,d,q$) is an ARMA($p,q$) applied to the series differenced $d$ times. $d>2$ is almost never necessary.
+
+\begin{atencao}[Overdifferencing]
+Differencing a series that is already stationary creates a unit root in the MA component (the MA becomes noninvertible). Symptoms: sample ACF with $\rho_1$ close to $-0.5$ and a larger variance after differencing. Difference only as much as necessary.
+\end{atencao}
+
+\section{The Box--Jenkins cycle in four steps}
+\begin{enumerate}[leftmargin=1.6em]
+\item \textbf{Specification}: look at the plot of the series, decide the transformation (log for growing variance) and the degree of differencing (unit root test, chapter~\ref{cap:ur}). Use the ACF and PACF to suggest candidates and information criteria (AIC, BIC) to compare them.
+\item \textbf{Estimation}: maximum likelihood or conditional least squares.
+\item \textbf{Diagnostics}: the residuals should look like white noise. Examine the ACF of the residuals and run the Ljung--Box test.
+\item \textbf{Forecasting}: only with the validated model (chapter~\ref{cap:prev}).
+\end{enumerate}
+
+\begin{atencao}[Pitfall: degrees of freedom of Ljung--Box]
+The statistic $Q=n(n+2)\sum_{k=1}^m\hat\rho_k^2/(n-k)$ is compared with a chi-square with $m-p-q$ degrees of freedom, \textbf{not} $m$, when testing residuals of an estimated ARMA($p,q$). Using $m$ makes the test conservative. Many software packages let you enter $p+q$ to adjust. Check.
+\end{atencao}
+
+\begin{intuicao}[AIC versus BIC]
+Both penalize complexity: $\text{AIC}=-2\ln L+2k$ and $\text{BIC}=-2\ln L+k\ln n$. The BIC penalizes more and tends to choose smaller, consistent models (it finds the true model when it is among the candidates). The AIC tends to favor forecast quality. When they disagree, look at both and prefer parsimony.
+\end{intuicao}
+
+\section{Seasonality}
+For data with a cycle of period $s$ (12 in monthly data), the seasonal ARIMA $(p,d,q)(P,D,Q)_s$ is used: it adds seasonal differencing $(1-B^s)$ and AR and MA terms at lags $s,2s,\dots$ The classic example is the ``airline model'', an ARIMA$(0,1,1)(0,1,1)_{12}$ applied to the logarithm of the series. Seasonality can also be handled with indicator variables or with exponential smoothing (Holt--Winters).
+
+\begin{exercicio}
+Is the model $y_t=0.5y_{t-1}+\varepsilon_t+0.4\varepsilon_{t-1}$ stationary and invertible?
+\end{exercicio}
+\sol{AR part: $\phi(B)=1-0.5B$, root $B=2$, outside the unit circle: stationary. MA part: $\theta(B)=1+0.4B$, root $B=-2.5$, outside the circle: invertible.}
+
+\begin{exercicio}
+A series has a sample ACF that decays very slowly (0.95; 0.93; 0.91, \dots). What does this suggest and what is the next step?
+\end{exercicio}
+\sol{Very persistent autocorrelations are typical of a unit root or a trend. The next step is to apply a unit root test (ADF, KPSS) and, if confirmed, difference the series before identifying the ARMA.}

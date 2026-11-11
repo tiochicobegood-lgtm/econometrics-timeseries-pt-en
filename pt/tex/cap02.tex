@@ -1,0 +1,38 @@
+\chapter{Assintótica em linguagem simples}
+\label{cap:assint}
+
+\section{Por que olhar para amostras grandes}
+Com amostras pequenas, só conseguimos propriedades exatas se fizermos hipóteses fortes, como erros normais. Com amostras grandes, a matemática fica mais leve e as hipóteses, mais realistas. Quatro ferramentas bastam para o curso inteiro.
+
+\begin{center}
+\small
+\begin{tabular}{p{3.6cm}p{10.2cm}}
+\toprule
+\textbf{Ferramenta} & \textbf{O que diz} \\
+\midrule
+Lei dos grandes números (LGN) & A média amostral $\bar x_n$ converge em probabilidade para $\E(x)$. \\
+Teorema central do limite (TCL) & $\sqrt n(\bar x_n-\mu)$ converge em distribuição para $N(0,\sigma^2)$, qualquer que seja a distribuição de $x$ (com variância finita). \\
+Teorema de Slutsky & Se $a_n\to_p a$ e $b_n\to_d b$, então $a_nb_n\to_d ab$ e $a_n+b_n\to_d a+b$. Permite trocar parâmetros desconhecidos por estimativas consistentes. \\
+Método delta & Se $\sqrt n(\hat\theta-\theta)\to_d N(0,V)$, então $\sqrt n\big(g(\hat\theta)-g(\theta)\big)\to_d N\big(0,g'(\theta)^2V\big)$. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Consistência não é ausência de viés}
+\begin{itemize}[leftmargin=1.4em]
+\item \textbf{Não viesado}: $\E(\hat\theta)=\theta$ para um tamanho de amostra fixo.
+\item \textbf{Consistente}: $\hat\theta\to_p\theta$ quando $n\to\infty$.
+\end{itemize}
+Um estimador pode ter um tipo e não o outro. A média de apenas as duas primeiras observações é não viesada e não é consistente. O estimador $\frac1n\sum(x_i-\bar x)^2$ da variância é viesado em amostras finitas e é consistente. Em econometria aplicada, consistência é o que costuma importar, porque quase nenhum estimador útil é exatamente não viesado.
+
+\section{O padrão por trás de todos os erros-padrão}
+A grande maioria dos estimadores que veremos satisfaz
+\[
+\sqrt n(\hat\beta-\beta)\;\to_d\; N\!\big(0,\;A^{-1}BA^{-1}\big),
+\]
+em que $A$ é a ``matriz de curvatura'' e $B$ é a variância do escore. Esse formato ``sanduíche'' reaparece no MQO com erros robustos (cap.~\ref{cap:mqo}), em VI (cap.~\ref{cap:vi}) e em painel com erros agrupados (cap.~\ref{cap:painel}). Quando a hipótese de homocedasticidade vale, $B$ é proporcional a $A$ e a expressão se simplifica para $\sigma^2A^{-1}$.
+
+\begin{exercicio}
+Seja $x_i$ i.i.d. com média $\mu=2$ e variância $\sigma^2=9$. Qual é o erro-padrão aproximado de $\bar x$ com $n=400$ e qual é um intervalo de 95\% se $\bar x=2{,}3$?
+\end{exercicio}
+\sol{$\mathrm{ep}=\sigma/\sqrt n=3/20=0{,}15$. Intervalo aproximado: $2{,}3\pm1{,}96\times0{,}15=[2{,}006;\,2{,}594]$. Se $\sigma$ fosse desconhecido, trocaríamos por um estimador consistente (Slutsky) e o resultado seria o mesmo em grandes amostras.}

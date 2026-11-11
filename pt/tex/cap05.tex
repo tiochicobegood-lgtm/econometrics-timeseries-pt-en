@@ -1,0 +1,56 @@
+\chapter{Variáveis instrumentais e MQ2E}
+\label{cap:vi}
+
+\section{A ideia}
+Quando $x$ é correlacionado com $u$ (endogeneidade), o MQO é inconsistente. Um \textbf{instrumento} $z$ é uma variável que move $x$ mas só afeta $y$ \emph{através de} $x$. Duas condições:
+\begin{enumerate}[leftmargin=1.6em]
+\item \textbf{Relevância}: $\Cov(z,x)\ne0$ (condicional aos demais regressores exógenos). É testável.
+\item \textbf{Exogeneidade}: $\Cov(z,u)=0$. Num modelo com exatamente um instrumento por variável endógena, \textbf{não é testável}. É um argumento econômico, não estatístico.
+\end{enumerate}
+
+\section{O estimador de VI simples}
+Com um regressor e um instrumento,
+\[
+\hat\beta_{VI}=\frac{\sum(z_i-\bar z)(y_i-\bar y)}{\sum(z_i-\bar z)(x_i-\bar x)}=\frac{\widehat{\Cov}(z,y)}{\widehat{\Cov}(z,x)}.
+\]
+\begin{intuicao}
+O numerador mede quanto $y$ muda quando $z$ muda. O denominador mede quanto $x$ muda quando $z$ muda. A razão é o efeito de $x$ sobre $y$ que se extrai apenas da variação induzida por $z$. Essa é a versão ``Wald'' da VI.
+\end{intuicao}
+
+\begin{exercicio}[Cálculo à mão]
+$z=(0,0,1,1,1,0)$, $x=(1,2,2,4,5,3)$, $y=(2,3,6,8,9,3)$. Calcule $\hat\beta_{VI}$ e compare com o MQO.
+\end{exercicio}
+\sol{Médias: $\bar z=0{,}5$, $\bar x=2{,}833$, $\bar y=5{,}167$. $\sum(z-\bar z)(y-\bar y)=7{,}5$ e $\sum(z-\bar z)(x-\bar x)=2{,}5$, logo $\hat\beta_{VI}=7{,}5/2{,}5=3{,}0$. O MQO dá $1{,}677$. A diferença entre os dois é grande, o que seria um sinal de endogeneidade se $z$ fosse um bom instrumento (com $n=6$, é apenas um exercício de contas).}
+
+\section{MQ2E (mínimos quadrados em dois estágios)}
+Com vários instrumentos $Z$ (que incluem os regressores exógenos), o estimador é
+\[
+\hat\beta_{2SLS}=\big(X'P_ZX\big)^{-1}X'P_Zy,\qquad P_Z=Z(Z'Z)^{-1}Z'.
+\]
+Em palavras: no primeiro estágio, regride-se cada variável endógena nos instrumentos; no segundo, usa-se o valor ajustado no lugar da variável original.
+
+\begin{simulacao}[{Conferido por simulação}]
+\textbf{Endogeneidade.} $x=0{,}8z+0{,}7u+\epsilon$, $y=1+2x+u$. O MQO converge para um valor errado, $2{,}33$. O MQ2E recupera $2{,}02$ (valor verdadeiro: 2). O estatístico F do primeiro estágio foi $\approx2090$.\\
+\textbf{Fórmula matricial.} Com dois instrumentos ($n=3000$), calculei $(X'P_ZX)^{-1}X'P_Zy$ na mão e com o pacote \texttt{linearmodels}. Os dois deram exatamente $(0{,}97599;\ 1{,}97238)$ para (constante, inclinação).
+\end{simulacao}
+
+\section{Instrumentos fracos}
+Se $\Cov(z,x)$ é quase zero, o denominador da VI fica próximo de zero e o estimador se torna instável e viesado em direção ao MQO.
+
+\begin{simulacao}[{Instrumento fraco}]
+Mesmo desenho, mas $x=0{,}02z+0{,}7u+\epsilon$. Aqui o MQO converge para $\approx2{,}47$ (viés maior, pois $x$ tem menos variação própria além de $u$). Numa simulação com $n=5000$, o MQ2E deu $2{,}30$: longe do verdadeiro (2) e puxado na direção do MQO. Com um instrumento tão fraco, o resultado de uma única amostra é muito instável. O instrumento existe, só que não ajuda.
+\end{simulacao}
+
+\begin{atencao}[{Armadilhas clássicas de VI}]
+\begin{itemize}[leftmargin=1.2em]
+\item \textbf{Fazer o 2º estágio ``na mão'' e usar o erro-padrão do segundo MQO}: está errado. Os resíduos usados devem ser calculados com o $x$ \emph{original}, não com o valor ajustado. Use um comando de MQ2E, que faz a correção.
+\item \textbf{Regra ``F do primeiro estágio $>10$''} é um piso mínimo, não uma garantia. Com muitos instrumentos fracos, o viés persiste.
+\item \textbf{Teste de sobreidentificação} (Sargan/Hansen) só testa se os instrumentos concordam entre si. Se todos são inválidos do mesmo jeito, ele não percebe.
+\item \textbf{VI estima um efeito local}: com efeitos heterogêneos, estima o efeito médio entre quem muda de $x$ por causa de $z$, não o efeito para toda a população.
+\end{itemize}
+\end{atencao}
+
+\begin{exercicio}
+Por que é inadequado usar como instrumento uma variável que afeta $y$ diretamente, mesmo que seja fortemente correlacionada com $x$?
+\end{exercicio}
+\sol{Porque ela viola a exogeneidade: parte da correlação entre $z$ e $y$ não passa por $x$, e a razão $\Cov(z,y)/\Cov(z,x)$ passa a incluir esse canal direto. O estimador converge para $\beta+\Cov(z,u)/\Cov(z,x)$, e o numerador deixa de ser zero.}

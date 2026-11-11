@@ -1,0 +1,64 @@
+\chapter{Esperança condicional e projeção linear}
+\label{cap:ec}
+
+\section{Para que serve a esperança condicional}
+Quase toda a econometria tenta responder: \emph{dado o que sei sobre $x$, qual é o valor típico de $y$?} A resposta matemática é a esperança condicional $m(x)=\E(y\mid x)$.
+
+\begin{intuicao}
+Imagine separar as pessoas por anos de estudo ($x$) e calcular o salário médio de cada grupo ($y$). A lista desses salários médios, um por grupo, é $m(x)$. Ela não diz nada sobre causa. Diz apenas qual é o salário médio de quem tem aquela escolaridade.
+\end{intuicao}
+
+\begin{resultado}[A esperança condicional é o melhor preditor]
+Para qualquer função $g(x)$,
+\[
+\E\big[(y-g(x))^2\big] \;=\; \E\big[(y-m(x))^2\big] \;+\; \E\big[(m(x)-g(x))^2\big] \;\ge\; \E\big[(y-m(x))^2\big].
+\]
+Logo $m(x)$ minimiza o erro quadrático médio entre todas as funções de $x$.
+\end{resultado}
+\emph{Por quê?} Some e subtraia $m(x)$ dentro do quadrado. O termo cruzado tem esperança zero porque $\E(y-m(x)\mid x)=0$.
+
+\section{A forma com erro}
+Defina $u = y - m(x)$. Então $y=m(x)+u$ com $\E(u\mid x)=0$. Duas consequências usadas o tempo todo:
+\begin{itemize}[leftmargin=1.4em]
+\item $\E(u)=0$ (pela lei das esperanças iteradas, $\E(u)=\E[\E(u\mid x)]$);
+\item $\Cov(u,h(x))=0$ para qualquer função $h$ (o erro não tem nenhuma relação com $x$, nem linear nem não linear).
+\end{itemize}
+
+\section{Efeitos parciais, elasticidades e semielasticidades}
+Se $m(x_1,x_2)$ é a esperança condicional, o efeito parcial de $x_1$ é $\partial m/\partial x_1$. Com variável em log:
+\begin{center}
+\small
+\begin{tabular}{lll}
+\toprule
+\textbf{Modelo} & \textbf{Coeficiente $\beta_1$ mede} & \textbf{Nome} \\
+\midrule
+$y=\beta_0+\beta_1x_1$ & variação de $y$ por unidade de $x_1$ & efeito marginal \\
+$\log y=\beta_0+\beta_1 x_1$ & $\approx 100\beta_1\%$ de variação em $y$ por unidade de $x_1$ & semielasticidade \\
+$\log y=\beta_0+\beta_1\log x_1$ & $\%$ de variação em $y$ por $1\%$ em $x_1$ & elasticidade \\
+\bottomrule
+\end{tabular}
+\end{center}
+Se o modelo tem interação ou termo quadrático, o efeito de $x_1$ muda com os valores das variáveis. Nesse caso reporte o \textbf{efeito parcial médio} (EPM): a média do efeito parcial sobre a distribuição de $x$.
+
+\section{Projeção linear: o que o MQO realmente estima}
+Nem sempre $m(x)$ é linear. Mesmo assim, existe sempre a melhor aproximação linear no sentido do erro quadrático médio:
+\[
+L(y\mid 1,x)=\beta_0+x\beta,\qquad \beta=\big[\E(x'x)\big]^{-1}\E(x'y)\ \ (\text{com } x \text{ incluindo o 1}).
+\]
+\begin{intuicao}
+A projeção linear é a reta (ou hiperplano) que melhor \emph{resume} a nuvem de pontos, mesmo que a nuvem seja curva. O MQO estima exatamente essa reta. Só quando $m(x)$ é de fato linear é que essa reta coincide com a esperança condicional.
+\end{intuicao}
+
+\begin{atencao}[{Armadilha: ``linear'' não é ``causal''}]
+O coeficiente da projeção é sempre bem definido. Isso não o transforma em efeito causal. Para que $\beta$ tenha leitura causal, é preciso um argumento extra sobre por que os outros fatores que afetam $y$ não se movem junto com $x$ (capítulos \ref{cap:mqo} a \ref{cap:vi}).
+\end{atencao}
+
+\begin{exercicio}
+Seja $x\sim N(0,1)$ e $y=x^2$ (sem ruído). Qual é a inclinação da projeção linear de $y$ sobre $x$? E o que isso diz sobre dependência entre $y$ e $x$?
+\end{exercicio}
+\sol{$\Cov(x,x^2)=\E(x^3)-\E(x)\E(x^2)=0$, pois os momentos ímpares de uma normal centrada são nulos. Logo a inclinação é zero e a projeção é a constante $\E(y)=1$. Porém $y$ é função exata de $x$. Uma correlação (ou inclinação) nula \textbf{não} significa independência. É o exemplo mais curto de por que a reta pode esconder uma relação forte.}
+
+\begin{exercicio}
+Mostre que, se $\E(u\mid x)=0$, então $\Cov(u,x^2)=0$.
+\end{exercicio}
+\sol{$\Cov(u,x^2)=\E(ux^2)-\E(u)\E(x^2)$. Pela lei das esperanças iteradas, $\E(ux^2)=\E[x^2\E(u\mid x)]=0$, e $\E(u)=0$. Portanto a covariância é nula.}

@@ -1,0 +1,37 @@
+\chapter{Vetores autorregressivos (VAR)}
+\label{cap:var}
+
+\section{O modelo}
+Um VAR($p$) para um vetor de $k$ variáveis é
+\[
+y_t=c+A_1y_{t-1}+\dots+A_py_{t-p}+u_t,\qquad \E(u_t)=0,\ \ \E(u_tu_t')=\Sigma.
+\]
+Cada variável é explicada pelas defasagens de \emph{todas} as variáveis, incluindo as suas próprias. A estimação por MQO, equação a equação, é consistente e, quando todas as equações têm os mesmos regressores, equivale à estimação de máxima verossimilhança (sob normalidade).
+
+\textbf{Estabilidade (estacionariedade)}: todos os autovalores da matriz companheira devem ter módulo menor que 1. É o análogo multivariado da condição $|\phi|<1$.
+
+\section{Escolha do número de defasagens}
+Estime VARs com $p=1,2,\dots,p_{\max}$ e compare AIC, BIC (ou Hannan--Quinn). Verifique que os resíduos não têm autocorrelação.
+
+\section{Causalidade de Granger}
+$x$ \emph{Granger-causa} $y$ se as defasagens de $x$ ajudam a prever $y$ além das defasagens do próprio $y$. Testa-se com um teste F conjunto dos coeficientes de $x$ na equação de $y$.
+
+\begin{atencao}[{Armadilha: Granger não é causalidade}]
+É uma noção de \emph{precedência preditiva}. Se um terceiro fator, não incluído, move as duas variáveis com defasagens diferentes, aparece ``causalidade de Granger'' sem causa nenhuma. O nome é enganoso.
+\end{atencao}
+
+\begin{simulacao}[{Conferido por simulação}]
+Simulei um VAR(1) bivariado com $A=\begin{pmatrix}0{,}5&0{,}2\\0&0{,}4\end{pmatrix}$ ($T=1500$). Estimativa: $\hat A=\begin{pmatrix}0{,}51&0{,}195\\-0{,}005&0{,}399\end{pmatrix}$. Os autovalores de $A$ têm módulos $0{,}5$ e $0{,}4$ (estável). O teste de Granger identificou corretamente: $y_2$ ajuda a prever $y_1$ (p-valor $\approx10^{-15}$) e $y_1$ não ajuda a prever $y_2$ (p-valor $0{,}82$).
+\end{simulacao}
+
+\section{Funções de resposta a impulso e decomposição da variância}
+A \textbf{resposta a impulso} mostra como cada variável reage, ao longo do tempo, a um choque numa equação. O problema: os erros $u_t$ costumam ser correlacionados entre equações, então ``um choque só em $y_1$'' não existe sem uma hipótese adicional. A solução mais comum é a decomposição de Cholesky, que impõe uma ordem recursiva (a primeira variável afeta as demais no mesmo período, mas não o contrário).
+
+\begin{atencao}
+\textbf{A ordem das variáveis na decomposição de Cholesky muda os resultados} quando os erros são correlacionados. Isso é uma escolha de identificação, e precisa ser justificada economicamente, não decidida por conveniência. A decomposição da variância do erro de previsão (FEVD) herda o mesmo problema.
+\end{atencao}
+
+\begin{exercicio}
+Um VAR(1) tem $A=\begin{pmatrix}0{,}6&0{,}3\\0{,}2&0{,}5\end{pmatrix}$. Ele é estável?
+\end{exercicio}
+\sol{Autovalores: $\lambda^2-(0{,}6+0{,}5)\lambda+(0{,}6\cdot0{,}5-0{,}3\cdot0{,}2)=\lambda^2-1{,}1\lambda+0{,}24=0$. Então $\lambda=(1{,}1\pm\sqrt{1{,}21-0{,}96})/2=(1{,}1\pm0{,}5)/2$, isto é, $0{,}8$ e $0{,}3$. Ambos têm módulo menor que 1: o VAR é estável.}

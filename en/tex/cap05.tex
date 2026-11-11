@@ -1,0 +1,56 @@
+\chapter{Instrumental variables and 2SLS}
+\label{cap:vi}
+
+\section{The idea}
+When $x$ is correlated with $u$ (endogeneity), OLS is inconsistent. An \textbf{instrument} $z$ is a variable that moves $x$ but affects $y$ only \emph{through} $x$. Two conditions:
+\begin{enumerate}[leftmargin=1.6em]
+\item \textbf{Relevance}: $\Cov(z,x)\ne0$ (conditional on the other exogenous regressors). It is testable.
+\item \textbf{Exogeneity}: $\Cov(z,u)=0$. In a model with exactly one instrument per endogenous variable, it is \textbf{not testable}. It is an economic argument, not a statistical one.
+\end{enumerate}
+
+\section{The simple IV estimator}
+With one regressor and one instrument,
+\[
+\hat\beta_{IV}=\frac{\sum(z_i-\bar z)(y_i-\bar y)}{\sum(z_i-\bar z)(x_i-\bar x)}=\frac{\widehat{\Cov}(z,y)}{\widehat{\Cov}(z,x)}.
+\]
+\begin{intuicao}
+The numerator measures how much $y$ changes when $z$ changes. The denominator measures how much $x$ changes when $z$ changes. The ratio is the effect of $x$ on $y$ extracted only from the variation induced by $z$. This is the ``Wald'' version of IV.
+\end{intuicao}
+
+\begin{exercicio}[Hand calculation]
+$z=(0,0,1,1,1,0)$, $x=(1,2,2,4,5,3)$, $y=(2,3,6,8,9,3)$. Compute $\hat\beta_{IV}$ and compare with OLS.
+\end{exercicio}
+\sol{Means: $\bar z=0.5$, $\bar x=2.833$, $\bar y=5.167$. $\sum(z-\bar z)(y-\bar y)=7.5$ and $\sum(z-\bar z)(x-\bar x)=2.5$, so $\hat\beta_{IV}=7.5/2.5=3.0$. OLS gives $1.677$. The difference between the two is large, which would be a sign of endogeneity if $z$ were a good instrument (with $n=6$ this is just an exercise in arithmetic).}
+
+\section{2SLS (two-stage least squares)}
+With several instruments $Z$ (which include the exogenous regressors), the estimator is
+\[
+\hat\beta_{2SLS}=\big(X'P_ZX\big)^{-1}X'P_Zy,\qquad P_Z=Z(Z'Z)^{-1}Z'.
+\]
+In words: in the first stage, each endogenous variable is regressed on the instruments; in the second, the fitted value is used in place of the original variable.
+
+\begin{simulacao}[Checked by simulation]
+\textbf{Endogeneity.} $x=0.8z+0.7u+\epsilon$, $y=1+2x+u$. OLS converges to a wrong value, $2.33$. 2SLS recovers $2.02$ (true value: 2). The first-stage F statistic was $\approx2090$.\\
+\textbf{Matrix formula.} With two instruments ($n=3000$), I computed $(X'P_ZX)^{-1}X'P_Zy$ by hand and with the \texttt{linearmodels} package. Both gave exactly $(0.97599;\ 1.97238)$ for (constant, slope).
+\end{simulacao}
+
+\section{Weak instruments}
+If $\Cov(z,x)$ is close to zero, the denominator of IV gets close to zero and the estimator becomes unstable and biased toward OLS.
+
+\begin{simulacao}[Weak instrument]
+Same design, but $x=0.02z+0.7u+\epsilon$. Here OLS converges to $\approx2.47$ (larger bias, since $x$ has less variation of its own besides $u$). In a simulation with $n=5000$, 2SLS gave $2.30$: far from the true value (2) and pulled toward OLS. With an instrument this weak, the result of a single sample is very unstable. The instrument exists, but it does not help.
+\end{simulacao}
+
+\begin{atencao}[Classic IV pitfalls]
+\begin{itemize}[leftmargin=1.2em]
+\item \textbf{Running the 2nd stage ``by hand'' and using the second OLS standard error}: this is wrong. The residuals used must be computed with the \emph{original} $x$, not the fitted value. Use a 2SLS command, which makes the correction.
+\item \textbf{The ``first-stage F $>10$'' rule} is a minimum floor, not a guarantee. With many weak instruments, bias persists.
+\item \textbf{Overidentification test} (Sargan/Hansen) only tests whether the instruments agree with each other. If all are invalid in the same way, it does not notice.
+\item \textbf{IV estimates a local effect}: with heterogeneous effects, it estimates the average effect among those whose $x$ changes because of $z$, not the effect for the whole population.
+\end{itemize}
+\end{atencao}
+
+\begin{exercicio}
+Why is it inadequate to use as an instrument a variable that affects $y$ directly, even if it is strongly correlated with $x$?
+\end{exercicio}
+\sol{Because it violates exogeneity: part of the correlation between $z$ and $y$ does not pass through $x$, and the ratio $\Cov(z,y)/\Cov(z,x)$ now includes that direct channel. The estimator converges to $\beta+\Cov(z,u)/\Cov(z,x)$, and the numerator is no longer zero.}

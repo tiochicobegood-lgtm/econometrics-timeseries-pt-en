@@ -1,0 +1,45 @@
+\chapter{Pitfalls and conventions cheat sheet}
+\label{cap:cola}
+
+This list gathers the points where books, software and intuition tend to diverge. Each item appears in the chapter indicated.
+
+\begin{center}
+\small
+\begin{longtable}{p{0.5cm}p{6.6cm}p{6.5cm}}
+\toprule
+\textbf{\#} & \textbf{Pitfall} & \textbf{Correct practice} \\
+\midrule
+\endhead
+1 & Taking $\E(u\mid x)=0$ as necessary for OLS consistency (ch.~\ref{cap:mqo}) & $\E(x'u)=0$ is enough. The conditional assumption is needed for the conditional-expectation interpretation and for finite-sample results. \\
+2 & Correcting for heteroskedasticity only after ``testing'' (ch.~\ref{cap:mqo}) & Report robust errors directly: they are valid in both cases. \\
+3 & Forgetting that heteroskedasticity-robust errors do not correct autocorrelation (ch.~\ref{cap:mqo}, \ref{cap:painel}) & HAC in series, clustered errors in panels. \\
+4 & Interpreting omitted variable bias without checking both signs (ch.~\ref{cap:omit}) & The bias is $\beta_2\delta_1$. The sign is the product of the two. \\
+5 & Expecting measurement error to always attenuate (ch.~\ref{cap:omit}) & Only holds for classical error in one regressor. With several regressors or nonclassical error, the effect is uncertain. \\
+6 & Running the 2nd stage of IV by hand (ch.~\ref{cap:vi}) & Use a 2SLS command, which corrects the standard errors. \\
+7 & Trusting the ``F $>10$'' rule as a guarantee (ch.~\ref{cap:vi}) & It is a minimum. Also report weak-instrument-robust intervals. \\
+8 & Using classic Hausman with robust errors (ch.~\ref{cap:painel}) & Use the Mundlak version with clustered errors. \\
+9 & Forgetting that fixed effects require strict exogeneity (ch.~\ref{cap:painel}) & With a lagged dependent variable or \emph{feedback}, use dynamic panel (GMM). \\
+10 & Copying an MA formula from a book and a coefficient from software without checking the sign (ch.~\ref{cap:est}) & Cryer--Chan and Mills: $\varepsilon_t-\theta\varepsilon_{t-1}$. Hamilton, R, \texttt{statsmodels}: $\varepsilon_t+\theta\varepsilon_{t-1}$. \\
+11 & Using $\pm1.96/\sqrt n$ bands as a verdict (ch.~\ref{cap:est}) & They hold under white noise. For other series, the bands are wider. \\
+12 & Ljung--Box with $m$ degrees of freedom on ARMA residuals (ch.~\ref{cap:arma}) & Use $m-p-q$. \\
+13 & Comparing the ADF statistic with $-1.96$ (ch.~\ref{cap:ur}) & Use Dickey--Fuller critical values (about $-2.86$ at 5\% with a constant). \\
+14 & Regressing integrated series in levels (ch.~\ref{cap:ur}) & Test cointegration. If there is none, difference. \\
+15 & Assuming the prediction interval has exact coverage (ch.~\ref{cap:prev}) & It ignores parameter and model uncertainty. Evaluate coverage out of sample. \\
+16 & Reading Granger as causality (ch.~\ref{cap:var}) & It is predictive precedence. \\
+17 & Ignoring the Cholesky order in impulse responses (ch.~\ref{cap:var}) & The order is an identification assumption and changes the results. \\
+18 & Interpreting $\omega$, $\alpha$, $\beta$ in isolation in persistent GARCH (ch.~\ref{cap:garch}) & Look at the persistence $\alpha+\beta$ and the unconditional variance. \\
+19 & Random cross-validation on series (ch.~\ref{cap:ml}) & Temporal validation, with rolling origin. \\
+20 & Expecting trees to extrapolate a trend (ch.~\ref{cap:ml}) & Remove the trend or use a hybrid model. \\
+\bottomrule
+\end{longtable}
+\end{center}
+
+\section*{Suggested study plan}
+\begin{enumerate}[leftmargin=1.6em]
+\item Chapters~\ref{cap:ec} to~\ref{cap:mqo}: do all the exercises by hand.
+\item Chapters~\ref{cap:omit} and~\ref{cap:vi}: replicate the simulations in Python or R, changing the parameters, until you can predict the result before running.
+\item Chapter~\ref{cap:painel}: build a simulated panel with $c_i$ correlated and uncorrelated and compare the estimators.
+\item Chapters~\ref{cap:est} to~\ref{cap:prev}: fit an ARIMA to a real series, run the diagnostics and the rolling-origin evaluation.
+\item Chapters~\ref{cap:ur} to~\ref{cap:garch}: test for unit roots and cointegration in pairs of price series; estimate a GARCH on daily returns.
+\item Chapter~\ref{cap:ml}: reproduce the cross-validation leakage and then solve it with temporal validation.
+\end{enumerate}

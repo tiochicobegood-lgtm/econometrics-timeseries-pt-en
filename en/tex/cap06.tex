@@ -1,0 +1,68 @@
+\chapter{Panel data}
+\label{cap:painel}
+
+\section{The unobserved effects model}
+We have $N$ units (people, firms, municipalities) observed over $T$ periods:
+\[
+y_{it}=x_{it}\beta+c_i+u_{it}.
+\]
+$c_i$ is the unobserved effect, constant over time (for example, ability or firm culture). The central question is: \textbf{is $c_i$ correlated with $x_{it}$?}
+
+\section{The main estimators}
+\begin{center}
+\small
+\begin{tabular}{p{3.4cm}p{5.3cm}p{5.2cm}}
+\toprule
+\textbf{Estimator} & \textbf{What it does} & \textbf{Consistent if} \\
+\midrule
+Pooled OLS (POLS) & Ignores $c_i$ and runs OLS on everything & $\E(x_{it}'(c_i+u_{it}))=0$, that is, $c_i$ uncorrelated with $x$ \\
+Fixed effects (within) & Subtracts each unit's mean, eliminating $c_i$ & Strict exogeneity: $u_{it}$ uncorrelated with $x_{is}$ in \emph{all} periods \\
+First differences & Regresses $\Delta y_{it}$ on $\Delta x_{it}$ & Same; with $T=2$ it coincides with fixed effects \\
+Random effects (GLS) & Subtracts a fraction $\theta$ of the unit mean & $c_i$ uncorrelated with $x_{it}$ (strong assumption) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{intuicao}
+Fixed effects uses only the variation \emph{within} each unit over time. Everything that is fixed within the unit (sex, place of birth, culture) is automatically neutralized, observed or not. The price: you lose the ability to estimate the effect of any variable that does not change over time, and you lose variation if $x$ changes little.
+\end{intuicao}
+
+\begin{simulacao}[Checked by simulation: correlated effect]
+$N=500$, $T=6$, $y_{it}=1+1.0\,x_{it}+c_i+u_{it}$, with $x_{it}=0.7c_i+\text{noise}$ (that is, $c_i$ and $x$ are correlated). The true effect is 1.0.
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+& Pooled OLS & Random effects & Fixed effects & First diff.\\
+\midrule
+Estimate & 1.47 & 1.27 & 0.98 & 1.00 \\
+\bottomrule
+\end{tabular}
+\end{center}
+Pooled OLS and random effects are biased because they assume $c_i$ is not correlated with $x$. Fixed effects and first differences recover the true value.
+\end{simulacao}
+
+\section{Fixed or random effects? The Hausman test and the Mundlak alternative}
+The Hausman test compares fixed and random effects. A more flexible version, which in practice is more used, is the \textbf{Mundlak approach}: include the time average $\bar x_i$ as an additional regressor and test whether the coefficient of $\bar x_i$ is zero. If it is zero, random effects is reasonable. The coefficient of $\bar x_i$ measures the difference between the ``between-unit'' and ``within-unit'' effects.
+
+\begin{simulacao}[Checked by simulation]
+With $c_i$ correlated with $x$, the coefficient of $\bar x_i$ was $1.06$, with a p-value practically zero: random effects is rejected. With $c_i$ independent of $x$, the coefficient was $0.16$ (p-value $0.26$): not rejected. The value $\approx1.06$ matches the theory: the difference between the ``between'' effect ($\approx2.07$) and the ``within'' effect (1).
+\end{simulacao}
+
+\begin{atencao}[Pitfalls in panels]
+\begin{itemize}[leftmargin=1.2em]
+\item \textbf{The classic Hausman test under robust/clustered errors} no longer has the expected distribution. Prefer the regression version (Mundlak) with clustered errors.
+\item \textbf{Always cluster the standard errors by unit.} $c_i$ generates serial correlation within the unit, even when $u_{it}$ is independent. The usual pooled OLS standard error is typically too small.
+\item \textbf{Strict exogeneity is strong.} Lagged dependent variables as regressors, or \emph{feedback} ($y_{it}$ affects $x_{i,t+1}$), violate it. In those cases, dynamic panel methods (GMM) are needed, which go beyond this chapter.
+\item \textbf{Fixed effects do not solve endogeneity that varies over time.}
+\end{itemize}
+\end{atencao}
+
+\begin{exercicio}
+With $T=2$, show that the fixed effects estimator equals the first-differences estimator.
+\end{exercicio}
+\sol{With $T=2$, the deviation from the mean is $\ddot y_{i1}=(y_{i1}-y_{i2})/2=-\Delta y_i/2$ and $\ddot y_{i2}=\Delta y_i/2$ (and the same holds for $x$). Then $\sum_t\ddot x_{it}\ddot y_{it}=\tfrac12\Delta x_i\Delta y_i$ and $\sum_t\ddot x_{it}^2=\tfrac12(\Delta x_i)^2$. The ratio of the sums over $i$ is $\sum\Delta x_i\Delta y_i/\sum(\Delta x_i)^2$, which is exactly OLS in first differences.}
+
+\begin{exercicio}
+Why can the effect of ``years of schooling'' not be estimated by fixed effects in a sample of adults who have already finished school?
+\end{exercicio}
+\sol{Because schooling does not vary within each person over the panel. After subtracting the person's mean, the regressor becomes zero in all periods, and the coefficient is not identified.}

@@ -1,0 +1,37 @@
+\chapter{Vector autoregressions (VAR)}
+\label{cap:var}
+
+\section{The model}
+A VAR($p$) for a vector of $k$ variables is
+\[
+y_t=c+A_1y_{t-1}+\dots+A_py_{t-p}+u_t,\qquad \E(u_t)=0,\ \ \E(u_tu_t')=\Sigma.
+\]
+Each variable is explained by the lags of \emph{all} variables, including its own. Estimation by OLS, equation by equation, is consistent and, when all equations have the same regressors, is equivalent to maximum likelihood estimation (under normality).
+
+\textbf{Stability (stationarity)}: all eigenvalues of the companion matrix must have modulus less than 1. This is the multivariate analogue of the condition $|\phi|<1$.
+
+\section{Choosing the number of lags}
+Estimate VARs with $p=1,2,\dots,p_{\max}$ and compare AIC, BIC (or Hannan--Quinn). Check that the residuals have no autocorrelation.
+
+\section{Granger causality}
+$x$ \emph{Granger-causes} $y$ if the lags of $x$ help predict $y$ beyond the lags of $y$ itself. It is tested with a joint F test of the coefficients of $x$ in the equation for $y$.
+
+\begin{atencao}[Pitfall: Granger is not causality]
+It is a notion of \emph{predictive precedence}. If an omitted third factor moves both variables with different lags, ``Granger causality'' appears with no cause at all. The name is misleading.
+\end{atencao}
+
+\begin{simulacao}[Checked by simulation]
+I simulated a bivariate VAR(1) with $A=\begin{pmatrix}0.5&0.2\\0&0.4\end{pmatrix}$ ($T=1500$). Estimate: $\hat A=\begin{pmatrix}0.51&0.195\\-0.005&0.399\end{pmatrix}$. The eigenvalues of $A$ have moduli $0.5$ and $0.4$ (stable). The Granger test correctly identified: $y_2$ helps predict $y_1$ (p-value $\approx10^{-15}$) and $y_1$ does not help predict $y_2$ (p-value $0.82$).
+\end{simulacao}
+
+\section{Impulse response functions and variance decomposition}
+The \textbf{impulse response} shows how each variable reacts, over time, to a shock in one equation. The problem: the errors $u_t$ are usually correlated across equations, so ``a shock only in $y_1$'' does not exist without an additional assumption. The most common solution is the Cholesky decomposition, which imposes a recursive order (the first variable affects the others in the same period, but not the reverse).
+
+\begin{atencao}
+\textbf{The order of the variables in the Cholesky decomposition changes the results} when the errors are correlated. This is an identification choice, and it must be justified economically, not decided for convenience. The forecast error variance decomposition (FEVD) inherits the same problem.
+\end{atencao}
+
+\begin{exercicio}
+A VAR(1) has $A=\begin{pmatrix}0.6&0.3\\0.2&0.5\end{pmatrix}$. Is it stable?
+\end{exercicio}
+\sol{Eigenvalues: $\lambda^2-(0.6+0.5)\lambda+(0.6\cdot0.5-0.3\cdot0.2)=\lambda^2-1.1\lambda+0.24=0$. So $\lambda=(1.1\pm\sqrt{1.21-0.96})/2=(1.1\pm0.5)/2$, that is, $0.8$ and $0.3$. Both have modulus less than 1: the VAR is stable.}

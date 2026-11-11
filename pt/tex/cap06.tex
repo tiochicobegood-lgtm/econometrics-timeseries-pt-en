@@ -1,0 +1,68 @@
+\chapter{Dados em painel}
+\label{cap:painel}
+
+\section{O modelo de efeitos não observados}
+Temos $N$ unidades (pessoas, firmas, municípios) observadas ao longo de $T$ períodos:
+\[
+y_{it}=x_{it}\beta+c_i+u_{it}.
+\]
+$c_i$ é o efeito não observado, constante no tempo (por exemplo, habilidade ou cultura da empresa). A pergunta central é: \textbf{$c_i$ é correlacionado com $x_{it}$?}
+
+\section{Os estimadores principais}
+\begin{center}
+\small
+\begin{tabular}{p{3.4cm}p{5.3cm}p{5.2cm}}
+\toprule
+\textbf{Estimador} & \textbf{O que faz} & \textbf{Consistente se} \\
+\midrule
+MQO agrupado (POLS) & Ignora $c_i$ e roda MQO em tudo & $\E(x_{it}'(c_i+u_{it}))=0$, isto é, $c_i$ não correlacionado com $x$ \\
+Efeitos fixos (within) & Subtrai a média de cada unidade, eliminando $c_i$ & Exogeneidade estrita: $u_{it}$ não correlacionado com $x_{is}$ em \emph{todos} os períodos \\
+Primeiras diferenças & Regride $\Delta y_{it}$ em $\Delta x_{it}$ & Idem; com $T=2$ coincide com efeitos fixos \\
+Efeitos aleatórios (GLS) & Subtrai uma fração $\theta$ da média da unidade & $c_i$ não correlacionado com $x_{it}$ (hipótese forte) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{intuicao}
+Efeitos fixos só usa a variação \emph{dentro} de cada unidade ao longo do tempo. Tudo que é fixo na unidade (sexo, local de nascimento, cultura) é neutralizado automaticamente, observado ou não. O preço: você perde a capacidade de estimar o efeito de qualquer variável que não muda no tempo, e perde variação se $x$ muda pouco.
+\end{intuicao}
+
+\begin{simulacao}[{Conferido por simulação: efeito correlacionado}]
+$N=500$, $T=6$, $y_{it}=1+1{,}0\,x_{it}+c_i+u_{it}$, com $x_{it}=0{,}7c_i+\text{ruído}$ (ou seja, $c_i$ e $x$ são correlacionados). O efeito verdadeiro é 1,0.
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+& MQO agrupado & Efeitos aleatórios & Efeitos fixos & Primeiras dif.\\
+\midrule
+Estimativa & 1,47 & 1,27 & 0,98 & 1,00 \\
+\bottomrule
+\end{tabular}
+\end{center}
+O MQO agrupado e os efeitos aleatórios ficam viesados porque assumem que $c_i$ não se correlaciona com $x$. Efeitos fixos e primeiras diferenças recuperam o valor verdadeiro.
+\end{simulacao}
+
+\section{Efeitos fixos ou aleatórios? Teste de Hausman e a alternativa de Mundlak}
+O teste de Hausman compara efeitos fixos e aleatórios. Uma versão mais flexível, que na prática é mais usada, é a \textbf{abordagem de Mundlak}: inclua a média temporal $\bar x_i$ como regressor adicional e teste se o coeficiente de $\bar x_i$ é zero. Se for zero, efeitos aleatórios é razoável. O coeficiente de $\bar x_i$ mede a diferença entre os efeitos ``entre unidades'' e ``dentro das unidades''.
+
+\begin{simulacao}[{Conferido por simulação}]
+Com $c_i$ correlacionado a $x$, o coeficiente de $\bar x_i$ foi $1{,}06$, com p-valor praticamente zero: rejeita-se efeitos aleatórios. Com $c_i$ independente de $x$, o coeficiente foi $0{,}16$ (p-valor $0{,}26$): não se rejeita. O valor $\approx1{,}06$ coincide com a teoria: diferença entre o efeito ``entre'' ($\approx2{,}07$) e o efeito ``dentro'' (1).
+\end{simulacao}
+
+\begin{atencao}[{Armadilhas em painel}]
+\begin{itemize}[leftmargin=1.2em]
+\item \textbf{Hausman clássico sob erros robustos/agrupados} deixa de ter a distribuição esperada. Prefira a versão por regressão (Mundlak) com erros agrupados.
+\item \textbf{Sempre agrupe os erros-padrão por unidade.} $c_i$ gera correlação serial dentro da unidade, mesmo quando $u_{it}$ é independente. O erro-padrão usual do MQO agrupado é tipicamente pequeno demais.
+\item \textbf{Exogeneidade estrita é forte.} Variáveis dependentes defasadas como regressor, ou \emph{feedback} ($y_{it}$ afeta $x_{i,t+1}$), a violam. Nesses casos, são necessários métodos de painel dinâmico (GMM), que fogem deste capítulo.
+\item \textbf{Efeitos fixos não resolvem endogeneidade que varia no tempo.}
+\end{itemize}
+\end{atencao}
+
+\begin{exercicio}
+Com $T=2$, mostre que o estimador de efeitos fixos é igual ao de primeiras diferenças.
+\end{exercicio}
+\sol{Com $T=2$, o desvio em relação à média é $\ddot y_{i1}=(y_{i1}-y_{i2})/2=-\Delta y_i/2$ e $\ddot y_{i2}=\Delta y_i/2$ (e o mesmo vale para $x$). Então $\sum_t\ddot x_{it}\ddot y_{it}=\tfrac12\Delta x_i\Delta y_i$ e $\sum_t\ddot x_{it}^2=\tfrac12(\Delta x_i)^2$. A razão das somas sobre $i$ é $\sum\Delta x_i\Delta y_i/\sum(\Delta x_i)^2$, que é exatamente o MQO em primeiras diferenças.}
+
+\begin{exercicio}
+Por que o efeito de ``anos de escolaridade'' não pode ser estimado por efeitos fixos numa amostra de adultos que já terminaram os estudos?
+\end{exercicio}
+\sol{Porque a escolaridade não varia dentro de cada pessoa ao longo do painel. Depois de subtrair a média da pessoa, o regressor vira zero para todos os períodos, e o coeficiente não é identificado.}

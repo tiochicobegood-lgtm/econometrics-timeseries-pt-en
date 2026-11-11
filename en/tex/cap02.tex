@@ -1,0 +1,38 @@
+\chapter{Asymptotics in plain language}
+\label{cap:assint}
+
+\section{Why look at large samples}
+With small samples, we only get exact properties if we make strong assumptions, such as normal errors. With large samples, the mathematics gets lighter and the assumptions more realistic. Four tools are enough for the whole course.
+
+\begin{center}
+\small
+\begin{tabular}{p{3.6cm}p{10.2cm}}
+\toprule
+\textbf{Tool} & \textbf{What it says} \\
+\midrule
+Law of large numbers (LLN) & The sample mean $\bar x_n$ converges in probability to $\E(x)$. \\
+Central limit theorem (CLT) & $\sqrt n(\bar x_n-\mu)$ converges in distribution to $N(0,\sigma^2)$, whatever the distribution of $x$ (with finite variance). \\
+Slutsky's theorem & If $a_n\to_p a$ and $b_n\to_d b$, then $a_nb_n\to_d ab$ and $a_n+b_n\to_d a+b$. It lets us replace unknown parameters by consistent estimates. \\
+Delta method & If $\sqrt n(\hat\theta-\theta)\to_d N(0,V)$, then $\sqrt n\big(g(\hat\theta)-g(\theta)\big)\to_d N\big(0,g'(\theta)^2V\big)$. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Consistency is not unbiasedness}
+\begin{itemize}[leftmargin=1.4em]
+\item \textbf{Unbiased}: $\E(\hat\theta)=\theta$ for a fixed sample size.
+\item \textbf{Consistent}: $\hat\theta\to_p\theta$ as $n\to\infty$.
+\end{itemize}
+An estimator can have one property and not the other. The mean of only the first two observations is unbiased and not consistent. The estimator $\frac1n\sum(x_i-\bar x)^2$ of the variance is biased in finite samples and consistent. In applied econometrics, consistency is usually what matters, because almost no useful estimator is exactly unbiased.
+
+\section{The pattern behind all standard errors}
+Most estimators we will see satisfy
+\[
+\sqrt n(\hat\beta-\beta)\;\to_d\; N\!\big(0,\;A^{-1}BA^{-1}\big),
+\]
+where $A$ is the ``curvature matrix'' and $B$ is the variance of the score. This ``sandwich'' form reappears in OLS with robust errors (ch.~\ref{cap:mqo}), in IV (ch.~\ref{cap:vi}) and in panel data with clustered errors (ch.~\ref{cap:painel}). When homoskedasticity holds, $B$ is proportional to $A$ and the expression simplifies to $\sigma^2A^{-1}$.
+
+\begin{exercicio}
+Let $x_i$ be i.i.d.\ with mean $\mu=2$ and variance $\sigma^2=9$. What is the approximate standard error of $\bar x$ with $n=400$, and what is a 95\% interval if $\bar x=2.3$?
+\end{exercicio}
+\sol{$\mathrm{se}=\sigma/\sqrt n=3/20=0.15$. Approximate interval: $2.3\pm1.96\times0.15=[2.006;\,2.594]$. If $\sigma$ were unknown, we would replace it with a consistent estimator (Slutsky) and the result would be the same in large samples.}

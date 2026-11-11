@@ -1,0 +1,39 @@
+{
+ "ovb_grande": 2.6620563464696234,
+ "ovb_pop": 2.661764705882353,
+ "garch_rho1_e2_sim": 0.17671180022825925,
+ "garch_rho1_e2_formula": 0.17906976744186054,
+ "garch_var_sim": 2.0090078967942815,
+ "garch_var_formula": 1.9999999999999984,
+ "garch_kurt_sim": 3.7742694681671827,
+ "garch_kurt_formula": 3.7741935483870965,
+ "iv_mini": {
+  "iv": 1.8,
+  "ols": 1.8,
+  "num": 5.4,
+  "den": 3.0
+ },
+ "coint_p": 0.0,
+ "coint_indep_p": 0.0396654358504284,
+ "var_A": [
+  [
+   0.51,
+   0.195
+  ],
+  [
+   -0.005,
+   0.399
+  ]
+ ],
+ "var_eig": [
+  0.5,
+  0.4
+ ],
+ "granger_y2_causa_y1_p": 3.3787265340073186e-15,
+ "granger_y1_causa_y2_p": 0.8169185881609087,
+ "cv_aleatorio_rmse": 1.0752559036510823,
+ "cv_temporal_rmse": 1.488384450410921,
+ "ruido_branco_sd": 1.0,
+ "rf_ultimo_pred": 9.274123771342168,
+ "valor_real_tendencia": 14.950000000000001
+}

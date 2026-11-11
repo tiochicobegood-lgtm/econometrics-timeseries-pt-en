@@ -1,0 +1,62 @@
+\documentclass[11pt,a4paper,openany]{book}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{fontspec}
+\usepackage{polyglossia}
+\setmainlanguage{english}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{unicode-math}
+\setmainfont{Latin Modern Roman}
+\setsansfont{Latin Modern Sans}
+\setmonofont{Latin Modern Mono}[Scale=0.95]
+\setmathfont{Latin Modern Math}
+\usepackage{microtype}
+\usepackage{booktabs,array,longtable}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+\usepackage{setspace}
+\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.7em}
+\setstretch{1.1}
+\emergencystretch=3em
+
+\definecolor{azul}{HTML}{1F4E79}
+\definecolor{verde}{HTML}{2E7D32}
+\definecolor{laranja}{HTML}{B85C00}
+\definecolor{cinza}{HTML}{F4F6F8}
+
+\titleformat{\chapter}[display]{\bfseries\sffamily\color{azul}}{\Large Chapter \thechapter}{0.4em}{\Huge}
+\titlespacing*{\chapter}{0pt}{-10pt}{22pt}
+\titleformat{\section}{\Large\bfseries\sffamily\color{azul}}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\large\bfseries\sffamily}{\thesubsection}{0.6em}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\setlength{\headheight}{14pt}
+\fancyhead[LE]{\small\sffamily\leftmark}
+\fancyhead[RO]{\small\sffamily Guide to Econometrics and Time Series}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+
+\newtcolorbox{intuicao}[1][Intuition]{colback=azul!5,colframe=azul,fonttitle=\bfseries\sffamily,title=#1,breakable,boxrule=0.6pt,arc=2pt}
+\newtcolorbox{atencao}[1][Pitfall]{colback=laranja!7,colframe=laranja,fonttitle=\bfseries\sffamily,title=#1,breakable,boxrule=0.6pt,arc=2pt}
+\newtcolorbox{simulacao}[1][Checked by simulation]{colback=verde!6,colframe=verde,fonttitle=\bfseries\sffamily,title=#1,breakable,boxrule=0.6pt,arc=2pt}
+\newtcolorbox{resumo}[1][In one page]{colback=cinza,colframe=black!60,fonttitle=\bfseries\sffamily,title=#1,breakable,boxrule=0.6pt,arc=2pt}
+
+\newtheoremstyle{guia}{0.6em}{0.6em}{\itshape}{}{\bfseries\sffamily}{.}{0.5em}{}
+\theoremstyle{guia}
+\newtheorem{resultado}{Result}[chapter]
+\theoremstyle{definition}
+\newtheorem{exercicio}{Exercise}[chapter]
+
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\plim}{\operatorname{plim}}
+\newcommand{\bb}{\boldsymbol}
+\newcommand{\sol}[1]{\textbf{Solution.} #1}
